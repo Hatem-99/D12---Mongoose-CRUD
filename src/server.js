@@ -4,6 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import blogsRouter from "./api/blogs/index.js";
 import { badRequestHandler, genericErrorHandler, notFoundHandler } from "./errorHandling.js";
+import usersRouter from "./api/users/index.js";
 
 
 
@@ -14,6 +15,7 @@ server.use(cors());
 server.use(express.json());
 
 server.use("/blogs", blogsRouter)
+server.use("/users", usersRouter)
 
 server.use(badRequestHandler)
 server.use(notFoundHandler)

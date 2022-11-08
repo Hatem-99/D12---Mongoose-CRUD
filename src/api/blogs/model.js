@@ -11,10 +11,8 @@ const blogsSchema = new Schema(
       value: { type: Number },
       unit: { type: Number },
     },
-    author: {
-      name: { type: String },
-      avatar: { type: String },
-    },
+      userId: { type: String },
+    seconedUserId: {type: String},
     content: { type: String },
   },
   {
