@@ -3,7 +3,7 @@ import listEndpoints from "express-list-endpoints";
 import cors from "cors";
 import mongoose from "mongoose";
 import blogsRouter from "./api/blogs/index.js";
-import { badRequestHandler, genericErrorHandler, notFoundHandler } from "./errorHandling.js";
+import { forbiddenErrorHandler, genericErrorHandler,notFoundErrorHandler, unauthorizedErrorHandler } from "./errorHandling.js";
 import usersRouter from "./api/users/index.js";
 
 
@@ -17,8 +17,9 @@ server.use(express.json());
 server.use("/blogs", blogsRouter)
 server.use("/users", usersRouter)
 
-server.use(badRequestHandler)
-server.use(notFoundHandler)
+server.use(unauthorizedErrorHandler)
+server.use(forbiddenErrorHandler)
+server.use(notFoundErrorHandler)
 server.use(genericErrorHandler)
 
 mongoose.connect(process.env.MONGO_CONNECTION_URL);

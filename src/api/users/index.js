@@ -4,7 +4,8 @@ import { adminOnlyMiddleware } from "./lib/adminonly.js";
 import UsersModel from "./model.js";
 import blogsModel from "../blogs/model.js";
 import { JwtAuthenticationMiddleware } from "./lib/tokenBaseAuth.js";
-import { createAccessToken } from "./lib/tools.js";
+import { createTokens, verifyAccessRefreshToken } from "./lib/tools.js";
+import { checkUserSchema } from "./validator.js";
 
 const usersRouter = express.Router();
 
@@ -115,7 +116,7 @@ usersRouter.get(
   }
 );
 
-usersRouter.post("/register", async (req, res, next) => {
+usersRouter.post("/register", checkUserSchema, async (req, res, next) => {
   try {
     const newUser = new UsersModel(req.body);
     const { _id } = await newUser.save();
@@ -132,15 +133,27 @@ usersRouter.post("/login", async (req, res, next) => {
     const user = await UsersModel.checkCredentials(email, password);
 
     if (user) {
-      const accessToken = await createAccessToken({
-        _id: user._id,
-        role: user.role,
-      });
-      res.send({ accessToken });
+      const { accessToken, refreshToken } = await createTokens(user);
+      res.send({ accessToken, refreshToken });
     } else {
       next(createHttpError(401, `Credentials are not ok!`));
     }
   } catch (error) {
+    next(error);
+  }
+});
+
+usersRouter.put("/refreshTokens", async (req, res, next) => {
+  try {
+    const { currentrefreshToken } = req.body;
+
+    const { accessToken, refreshToken } = await verifyAccessRefreshToken(
+      currentrefreshToken
+    );
+
+    res.send({ accessToken, refreshToken });
+  } catch (error) {
+    console.log(error)
     next(error);
   }
 });
