@@ -11,8 +11,8 @@ const blogsSchema = new Schema(
       value: { type: Number },
       unit: { type: Number },
     },
-      userId: { type: String },
-    seconedUserId: {type: String},
+      userId: [],
+   
     content: { type: String },
   },
   {
