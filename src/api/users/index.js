@@ -4,7 +4,7 @@ import { adminOnlyMiddleware } from "./lib/adminonly.js";
 import UsersModel from "./model.js";
 import blogsModel from "../blogs/model.js";
 import { JwtAuthenticationMiddleware } from "./lib/tokenBaseAuth.js";
-import { createTokens, verifyAccessRefreshToken } from "./lib/tools.js";
+import { createTokens, verifyAccessRefreshToken, verifyRefreshAndCreateNewTokens } from "./lib/tools.js";
 import { checkUserSchema } from "./validator.js";
 
 const usersRouter = express.Router();
@@ -147,13 +147,14 @@ usersRouter.put("/refreshTokens", async (req, res, next) => {
   try {
     const { currentrefreshToken } = req.body;
 
-    const { accessToken, refreshToken } = await verifyAccessRefreshToken(
+    const { accessToken, refreshToken } = await verifyRefreshAndCreateNewTokens(
       currentrefreshToken
     );
+    console.log(accessToken,refreshToken)
 
     res.send({ accessToken, refreshToken });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     next(error);
   }
 });
